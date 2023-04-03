@@ -1,5 +1,5 @@
 ### get hello
 GET http://localhost:8080/hello?name=spring
 
-### Send POST request with json body
+### post hello
 POST http://localhost:8080/hello?name=spring

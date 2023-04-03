@@ -11,9 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import tobyspring.helloboot.controller.HelloController;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @SpringBootApplication
 public class HellobootApplication {
@@ -21,18 +21,22 @@ public class HellobootApplication {
     public static void main(String[] args) {
         TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
         WebServer webServer = tomcatServletWebServerFactory.getWebServer(servletContext -> {
-            servletContext.addServlet("hello", new HttpServlet() {
+            HelloController helloController = new HelloController();
+
+            servletContext.addServlet("frontcontroller", new HttpServlet() {
                 @Override
-                protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
                     // 인증, 보안, 다국어, 공통 기능
                     if (req.getRequestURI().equals("/hello") && req.getMethod().equals(HttpMethod.GET.name())) {
                         String name = req.getParameter("name");
+
+                        String ret = helloController.hello(name);
+
                         resp.setStatus(HttpStatus.OK.value());
                         resp.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
-                        PrintWriter writer = resp.getWriter();
-                        writer.println("Hello " + name);
+                        resp.getWriter().println(ret);
                     } else if (req.getRequestURI().equals("/user")) {
-                        // nothing
+                        resp.setStatus(HttpStatus.OK.value());
                     } else {
                         resp.setStatus(HttpStatus.NOT_FOUND.value());
                     }
